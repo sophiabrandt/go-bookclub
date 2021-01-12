@@ -1,0 +1,43 @@
+version: '2.4'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    command: sh -c 'ls | entr -r go run ./cmd/app'
+    ports:
+      - 8000:8000
+      - 6060:6060
+    volumes:
+      - .:/usr/src/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "localhost:6060/debug/health"]
+      interval: 3s
+      start_period: 10s
+      timeout: 4s
+      retries: 10
+    depends_on:
+      - db
+
+  db:
+    build:
+      context: ./docker/database
+      dockerfile: Dockerfile
+    command: -p 5678
+    ports:
+      - 5678:5678
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data:delegated
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      start_period: 10s
+      timeout: 4s
+      retries: 3
+
+volumes:
+  db-data:
