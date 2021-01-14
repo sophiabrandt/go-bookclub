@@ -6,18 +6,18 @@ import (
 	"os"
 
 	"github.com/sophiabrandt/go-bookclub/business/logger"
-	"github.com/vmihailenco/treemux"
+	"github.com/sophiabrandt/go-bookclub/foundation/web"
 )
 
 // API constructs an http.Handler with all application routes defined.
-func API(build string, shutdown chan os.Signal, logger *logger.Logger) *treemux.TreeMux {
-	mux := treemux.New()
+func API(build string, shutdown chan os.Signal, logger *logger.Logger) http.Handler {
+	app := web.NewApp(shutdown)
 
 	check := checkGroup{
 		logger: logger,
 	}
 
-	mux.Handle(http.MethodGet, "/test", treemux.HTTPHandlerFunc(check.readiness))
+	app.Handle(http.MethodGet, "/readiness", check.readiness)
 
-	return mux
+	return app
 }

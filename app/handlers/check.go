@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -12,8 +13,7 @@ type checkGroup struct {
 	logger *logger.Logger
 }
 
-func (cg checkGroup) readiness(w http.ResponseWriter, r *http.Request) {
-
+func (cg checkGroup) readiness(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	status := struct {
 		Status string
 	}{
@@ -21,4 +21,6 @@ func (cg checkGroup) readiness(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(status)
 	cg.logger.Info(fmt.Sprint(status))
+
+	return nil
 }
