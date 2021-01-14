@@ -8,8 +8,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/majidsajadi/sariaf"
 	"github.com/matoous/go-nanoid/v2"
-	"github.com/vmihailenco/treemux"
 )
 
 // ctxKey represents the type of value for the context key.
@@ -32,14 +32,14 @@ type Handler func(ctx context.Context, w http.ResponseWriter, r *http.Request) e
 // App is the entrypoint into our application and what configures our context
 // object for each of our http handlers.
 type App struct {
-	mux      *treemux.TreeMux
+	mux      *sariaf.Router
 	shutdown chan os.Signal
 	mw       []Middleware
 }
 
 // NewApp creates an App value that handle a set of routes for the application.
 func NewApp(shutdown chan os.Signal, mw ...Middleware) *App {
-	mux := treemux.New()
+	mux := sariaf.New()
 
 	return &App{
 		mux:      mux,
@@ -70,7 +70,7 @@ func (a *App) Handle(method string, path string, handler Handler, mw ...Middlewa
 	handler = wrapMiddleware(a.mw, handler)
 
 	// The function to execute for each request.
-	h := treemux.HTTPHandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	h := func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		// Set the context with the required values to
 		// process the request.
@@ -89,6 +89,6 @@ func (a *App) Handle(method string, path string, handler Handler, mw ...Middlewa
 			a.SignalShutdown()
 			return
 		}
-	})
+	}
 	a.mux.Handle(method, path, h)
 }
