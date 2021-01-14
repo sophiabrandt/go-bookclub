@@ -13,6 +13,7 @@ import (
 
 	"github.com/ardanlabs/conf"
 	"github.com/pkg/errors"
+	"github.com/sophiabrandt/go-bookclub/app/handlers"
 	lr "github.com/sophiabrandt/go-bookclub/business/logger"
 )
 
@@ -101,11 +102,9 @@ func run(logger *lr.Logger) error {
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
 
-	mux := http.NewServeMux()
-
 	api := http.Server{
 		Addr:         cfg.Web.APIHost,
-		Handler:      mux,
+		Handler:      handlers.API(build, shutdown, logger),
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeout,
 		IdleTimeout:  cfg.Web.IdleTimeout,
