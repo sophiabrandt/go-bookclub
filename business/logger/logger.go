@@ -12,9 +12,9 @@ type Logger struct {
 
 // func Init creates a new zap logger.
 func Init() *Logger {
-	config := zap.NewProductionConfig()
+	config := zap.NewDevelopmentConfig()
 
-	encoderConfig := zap.NewProductionEncoderConfig()
+	encoderConfig := zap.NewDevelopmentEncoderConfig()
 	encoderConfig.TimeKey = "timestamp"
 	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	encoderConfig.StacktraceKey = ""
@@ -36,4 +36,14 @@ func (l *Logger) Info(message string, fields ...zap.Field) {
 // Error logs message on the error level.
 func (l *Logger) Error(message string, fields ...zap.Field) {
 	l.logger.Error(message, fields...)
+}
+
+// Panic logs message on the error level.
+func (l *Logger) Panic(message string, fields ...zap.Field) {
+	l.logger.Panic(message, fields...)
+}
+
+// Debug logs message on the error level.
+func (l *Logger) Debug(message string, fields ...zap.Field) {
+	l.logger.Debug(message, fields...)
 }

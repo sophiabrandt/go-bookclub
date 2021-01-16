@@ -6,12 +6,13 @@ import (
 	"os"
 
 	"github.com/sophiabrandt/go-bookclub/business/logger"
+	"github.com/sophiabrandt/go-bookclub/business/mid"
 	"github.com/sophiabrandt/go-bookclub/foundation/web"
 )
 
 // API constructs an http.Handler with all application routes defined.
 func API(build string, shutdown chan os.Signal, logger *logger.Logger) http.Handler {
-	app := web.NewApp(shutdown)
+	app := web.NewApp(shutdown, mid.Logger(logger), mid.Errors(logger), mid.Metrics(), mid.Panics(logger))
 
 	check := checkGroup{
 		logger: logger,
