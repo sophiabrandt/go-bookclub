@@ -18,7 +18,7 @@ func API(build string, shutdown chan os.Signal, logger *logger.Logger) http.Hand
 		logger: logger,
 	}
 
-	app.Handle(http.MethodGet, "/readiness", check.readiness)
+	app.HandleDebug(http.MethodGet, "/readiness", check.readiness)
 
 	return app
 }
